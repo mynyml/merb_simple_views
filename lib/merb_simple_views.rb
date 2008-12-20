@@ -1,6 +1,7 @@
 if defined?(Merb::Plugins)
   dir = Pathname(__FILE__).dirname / 'merb_simple_views'
 
+  require dir / 'template_parser'
   require dir / 'mixin'
 
   # config options
