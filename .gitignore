@@ -1,3 +1,4 @@
-log/*.log
 draft
+log/*.log
+log/*.pid
 **/*.bk.rb
