@@ -4,13 +4,20 @@ module SimpleViews
     alias :raw  :raw_templates
     alias :raw= :raw_templates=
 
+    def initialize
+      self.raw_templates = ''
+    end
+
     # Read a file and fetch its __END__ section, if any
     #
     # === Parameters
     # file<String,Pathname>:: File to find in-file templates in
     #
+    # === Returns
+    # self
+    #
     # :api: public
-    def initialize(file='')
+    def load(file='')
       file = Pathname(file)
       if file.exist?
         parts = file.read.split(/^__END__$/)
@@ -18,9 +25,11 @@ module SimpleViews
           self.raw_templates = parts[1].lstrip
         end
       end
+      self
     end
 
-    def parse
+    def parse(file='')
+      self.load(file) if file
       templates, current, ignore = {}, nil, false
       self.raw_templates.each_line do |line|
         if matches = line.strip.match(/^\s*(\#)*\s*@@\s*(.*)/)

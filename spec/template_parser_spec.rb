@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 describe "Parser" do
 
   before(:each) do
-    @parser = SimpleViews::TemplateParser.new(__FILE__)
+    @parser = SimpleViews::TemplateParser.new.load(__FILE__)
   end
 
   it "should load in-file templates" do
