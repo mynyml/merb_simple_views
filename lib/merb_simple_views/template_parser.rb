@@ -1,11 +1,16 @@
 module SimpleViews
   class TemplateParser
     attr_accessor :raw_templates
-    alias :raw  :raw_templates
-    alias :raw= :raw_templates=
+    alias :raw    :raw_templates
+    alias :raw=   :raw_templates=
+
+    attr_accessor  :parsed_templates
+    alias :parsed  :raw_templates
+    alias :parsed= :raw_templates=
 
     def initialize
       self.raw_templates = ''
+      self.parsed_templates = []
     end
 
     # Read a file and fetch its __END__ section, if any
@@ -42,7 +47,8 @@ module SimpleViews
         end
       end
       # remove trailing witespace off every template body and template name
-      templates.each {|key,value| templates[key.chomp.gsub(/[[:blank:]]|\t/,'')] = value.rstrip }
+      self.parsed_templates = templates.each {|key,value| templates[key.chomp.gsub(/[[:blank:]]|\t/,'')] = value.rstrip }
+      self.parsed_templates
     end
   end
 end
