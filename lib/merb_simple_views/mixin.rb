@@ -20,6 +20,7 @@ module SimpleViews
     # rule? what are the alternatives?
     #_
     # @public
+    # @TODO fake chainable instead of alias_method_chain
     def self.included(base)
       unless method_defined?(:render_without_simple_views)
         base.class_eval { alias :render_without_simple_views :render    }
@@ -29,16 +30,19 @@ module SimpleViews
       end
     end
 
-    def render_with_simple_views
-      self._template_parser.load(__caller_info__.first.first).parse.each do |template_name, raw_content|
+    def render_with_simple_views(*args)
+      tpls_path = (@__caller_info__ || __caller_info__).first.first
+      self._template_parser.load(tpls_path).parse.each do |template_name, raw_content|
         path = Merb.dir_for(:view) / self._template_location(template_name, nil, controller_name)
         file = VirtualFile.new(raw_content, path)
         TEMPLATES[path.to_s] = file
       end
-      render_without_simple_views
+      render_without_simple_views(*args)
     end
 
-    def display_with_simple_views
+    def display_with_simple_views(*args)
+      @__caller_info__ = __caller_info__
+      display_without_simple_views(*args)
     end
 
     def _template_parser
