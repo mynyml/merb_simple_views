@@ -5,44 +5,19 @@ module SimpleViews
   module Mixin
     attr_accessor :_template_parser
 
-    # When mixin is included in controller, define aliases to wrap #render and
-    # #display
-    #
-    # ==== Parameters
-    # base<Module>:: Merb::Controller object that is including Mixin
-    #
-    # ==== Notes
-    # http://yehudakatz.com/2008/05/22/the-greatest-thing-since-sliced-merb/
-    # "We consider cases of people using alias_method_chain on Merb to be a bug in
-    # Merb, and try to find ways to expose enough functionality so it will not be
-    # required."
-    # So could this code be written otherwise, or is it an exception to the above
-    # rule? what are the alternatives?
-    #_
-    # @public
-    # @TODO fake chainable instead of alias_method_chain
-    def self.included(base)
-      unless method_defined?(:render_without_simple_views)
-        base.class_eval { alias :render_without_simple_views :render    }
-        base.class_eval { alias :render :render_with_simple_views       }
-        base.class_eval { alias :display_without_simple_views :display  }
-        base.class_eval { alias :display :display_with_simple_views     }
-      end
-    end
-
-    def render_with_simple_views(*args)
+    def render(*args)
       tpls_path = (@__caller_info__ || __caller_info__).first.first
       self._template_parser.load(tpls_path).parse.each do |template_name, raw_content|
         path = Merb.dir_for(:view) / self._template_location(template_name, nil, controller_name)
         file = VirtualFile.new(raw_content, path)
         TEMPLATES[path.to_s] = file
       end
-      render_without_simple_views(*args)
+      super
     end
 
-    def display_with_simple_views(*args)
+    def display(*args)
       @__caller_info__ = __caller_info__
-      display_without_simple_views(*args)
+      super
     end
 
     def _template_parser
