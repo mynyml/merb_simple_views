@@ -10,7 +10,7 @@ module SimpleViews
 
     def initialize
       self.raw_templates = ''
-      self.parsed_templates = []
+      self.parsed_templates = {}
     end
 
     # Read a file and fetch its __END__ section, if any

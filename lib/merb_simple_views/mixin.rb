@@ -1,5 +1,9 @@
 module SimpleViews
+
+  TEMPLATES = {}
+
   module Mixin
+    attr_accessor :_template_parser
 
     # When mixin is included in controller, define aliases to wrap #render and
     # #display
@@ -26,9 +30,25 @@ module SimpleViews
     end
 
     def render_with_simple_views
+      self._template_parser.load(__caller_info__.first.first).parse.each do |template_name, raw_content|
+        path = Merb.dir_for(:view) / self._template_location(template_name, nil, controller_name)
+        file = VirtualFile.new(raw_content, path)
+        TEMPLATES[path.to_s] = file
+      end
+      render_without_simple_views
     end
 
     def display_with_simple_views
     end
+
+    def _template_parser
+      @_template_parser ||= SimpleViews::TemplateParser.new
+    end
+  end
+end
+
+module Merb::Template
+  def self.load_template_io(path)
+    super || template_extensions.map {|ext| SimpleViews::TEMPLATES["#{path}.#{ext}"] }.compact.first
   end
 end

@@ -13,10 +13,6 @@ end
 
 Merb.start :environment => 'test', :adapter => 'runner'
 
-Spec::Runner.configure do |config|
-  config.include Merb::Test::RequestHelper  
-end
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Core Extensions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,4 +25,27 @@ class String
   def unindent!
     self.replace(self.unindent)
   end
+end
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Helpers
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+module Helpers
+  def write_template(name, content, controller)
+    view_path = Merb.dir_for(:view) / controller.controller_name / name
+    view_path.dirname.mkdir
+    Kernel.open(view_path, 'w+') {|file| file.write(content) }
+  end
+
+  def clean_view_dir!
+    FileUtils.rm_rf( Pathname.glob(Merb.dir_for(:view) / "*") )
+  end
+end
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Config
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Spec::Runner.configure do |config|
+  config.include Merb::Test::RequestHelper
+  config.include Helpers
 end
