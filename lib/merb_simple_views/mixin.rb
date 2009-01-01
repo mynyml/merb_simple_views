@@ -6,9 +6,11 @@ module SimpleViews
     attr_accessor :_template_parser
 
     def render(*args)
-      tpls_path = (@__caller_info__ || __caller_info__).first.first
-      self._template_parser.load(tpls_path).parse.each do |template_name, raw_content|
-        path = Merb.dir_for(:view) / self._template_location(template_name, nil, controller_name)
+      tpls_file = (@__caller_info__ || __caller_info__).first.first
+      self._template_parser.load(tpls_file).parse.each do |template_name, raw_content|
+        # no controller name if absolute view path
+        ctrl_name = template_name.match(/^\//) ? nil : self.controller_name
+        path = Merb.dir_for(:view) / self._template_location(template_name.gsub(/^\//,''), nil, ctrl_name)
         file = VirtualFile.new(raw_content, path)
         TEMPLATES[path.to_s] = file
       end
