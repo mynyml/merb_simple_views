@@ -3,7 +3,12 @@ module SimpleViews
   TEMPLATES = {}
 
   module Mixin
-    attr_accessor :_template_parser
+    attr_reader :_template_parser
+
+    def initialize
+      @_template_parser = SimpleViews::TemplateParser.new
+      super
+    end
 
     def render(*args)
       tpls_file = (@__caller_info__ || __caller_info__).first.first
@@ -20,10 +25,6 @@ module SimpleViews
     def display(*args)
       @__caller_info__ = __caller_info__
       super
-    end
-
-    def _template_parser
-      @_template_parser ||= SimpleViews::TemplateParser.new
     end
   end
 end
