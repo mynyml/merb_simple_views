@@ -23,7 +23,13 @@ describe "Simple Views" do
         display(obj)
       end
     end
-    @posts = Posts.new(fake_request)
+    class Topics < Merb::Controller
+      def index() render end
+      def quote() render end
+    end
+    # -----
+    @posts  = Posts.new(fake_request)
+    @topics = Topics.new(fake_request)
     # -----
     clean_view_dir!
   end
@@ -65,6 +71,23 @@ describe "Simple Views" do
         @posts.body.should == "<b>y</b>"
       end
     end
+
+    describe "with multiple controllers" do
+
+      it "should pick up templates from the same file" do
+        @posts._dispatch(:quote)
+        @posts.body.should == "<i>kitteh-01</i>"
+        @topics._dispatch(:quote)
+        @topics.body.should == "<i>ceilingcat</i>"
+      end
+
+      it "should allow different controllers to use the same, relative template" do
+        @posts._dispatch(:index)
+        @posts.body.should == "kittehs"
+        @topics._dispatch(:index)
+        @topics.body.should == "kittehs"
+      end
+    end
   end
 end
 
@@ -77,3 +100,6 @@ kitteh-01
 
 @@ /posts/quote.html.erb
 <i>kitteh-01</i>
+
+@@ /topics/quote.html.erb
+<i>ceilingcat</i>
