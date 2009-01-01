@@ -11,10 +11,11 @@ describe "Simple Views" do
 
   before(:each) do
     class Posts < Merb::Controller
-      def index() render  end
-      def edit()  render  end
-      def quote() render  end
-      def nohaz() render  end
+      def index()  render end
+      def edit()   render end
+      def quote()  render end
+      def nohaz()  render end
+      def random() render end
       def show
         obj = Object.new; def obj.to_html() '<b>x</b>' end
         display(obj)
@@ -57,6 +58,12 @@ describe "Simple Views" do
       @posts._dispatch(:quote)
       @posts._template_parser.parsed_templates['/posts/quote.html.erb'].should == "<i>kitteh-01</i>"
       @posts.body.should == "<i>kitteh-01</i>"
+    end
+
+    it "should let template engines parse views" do
+      @posts._dispatch(:random)
+      @posts._template_parser.parsed_templates['/posts/random.html.erb'].should == "<i>kitteh-<%= '07' %></i>"
+      @posts.body.should == "<i>kitteh-07</i>"
     end
 
     describe "falling back to default behaviour" do
@@ -104,6 +111,9 @@ kittehs
 
 @@ show.html.erb
 kitteh-01
+
+@@ /posts/random.html.erb
+<i>kitteh-<%= '07' %></i>
 
 @@ /posts/quote.html.erb
 <i>kitteh-01</i>
