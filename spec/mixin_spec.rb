@@ -62,8 +62,8 @@ describe "Simple Views" do
 
     it "should let template engines parse views" do
       @posts._dispatch(:random)
-      @posts._template_parser.parsed_templates['/posts/random.html.erb'].should == "<i>kitteh-<%= '07' %></i>"
-      @posts.body.should == "<i>kitteh-07</i>"
+      @posts._template_parser.parsed_templates['/posts/random.html.erb'].should == "kitteh-<%= '07' %>"
+      @posts.body.should == "kitteh-07"
     end
 
     it "should respect changes to #_template_location" do
@@ -148,7 +148,7 @@ kittehs
 kitteh-01
 
 @@ /posts/random.html.erb
-<i>kitteh-<%= '07' %></i>
+kitteh-<%= '07' %>
 
 @@ /posts/quote.html.erb
 <i>kitteh-01</i>
