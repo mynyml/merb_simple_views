@@ -66,6 +66,33 @@ describe "Simple Views" do
       @posts.body.should == "<i>kitteh-07</i>"
     end
 
+    describe "with template reloading" do
+
+      it "should reload templates when code reloading is on" do
+        Merb::Config[:reload_templates] = true
+        # -----
+        @posts._dispatch(:index)
+        @posts.body.should == "kittehs"
+        # -----
+        @posts._template_parser.stub!(:parsed_templates).and_return({'index.html.erb' => 'swapped'})
+        # -----
+        @posts._dispatch(:index)
+        @posts.body.should == "swapped"
+      end
+
+      it "should not reload templates when code reloading is off" do
+        Merb::Config[:reload_templates] = false
+        # -----
+        @posts._dispatch(:index)
+        @posts.body.should == "kittehs"
+        # -----
+        @posts._template_parser.stub!(:parsed_templates).and_return({'index.html.erb' => 'swapped'})
+        # -----
+        @posts._dispatch(:index)
+        @posts.body.should == "kittehs"
+      end
+    end
+
     describe "falling back to default behaviour" do
 
       it "should delegate to regular render control flow when no in-file template exists" do
