@@ -14,6 +14,7 @@ describe "Simple Views" do
       def index() render  end
       def edit()  render  end
       def quote() render  end
+      def nohaz() render  end
       def show
         obj = Object.new; def obj.to_html() '<b>x</b>' end
         display(obj)
@@ -69,6 +70,12 @@ describe "Simple Views" do
       it "should delegate to regular display control flow when no in-file template exists" do
         @posts._dispatch(:new)
         @posts.body.should == "<b>y</b>"
+      end
+
+      it "should raise exception when template is not found" do
+        lambda {
+          @posts._dispatch(:nohaz)
+        }.should raise_error(Merb::ControllerExceptions::TemplateNotFound)
       end
     end
 
