@@ -66,6 +66,14 @@ describe "Simple Views" do
       @posts.body.should == "<i>kitteh-07</i>"
     end
 
+    it "should respect changes to #_template_location" do
+      def @posts._template_location(context, type=nil, controller=controller_name)
+        "#{controller}.#{action_name}.#{type}"
+      end
+      @posts._dispatch(:index)
+      @posts.body.should == "tiny kittehs"
+    end
+
     describe "with template reloading" do
 
       it "should reload templates when code reloading is on" do
@@ -147,3 +155,6 @@ kitteh-01
 
 @@ /topics/quote.html.erb
 <i>ceilingcat</i>
+
+@@ /posts.index.html.erb
+tiny kittehs
